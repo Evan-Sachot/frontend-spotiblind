@@ -1,45 +1,64 @@
+// ============================================================
+// GUESS INPUT — Champ de recherche + suggestions (phase GUESS_SONG).
+//
+// ⚠️ POINT CRITIQUE (cause de la régression de validation) :
+// onSelect reçoit la SUGGESTION COMPLÈTE, pas seulement son id.
+// Le serveur valide par titre+artiste normalisés : sans eux, le
+// garde-fou du back rejette silencieusement la réponse.
+// ============================================================
 import type { GuessInputProps } from "../../types/game.types";
 
-export const GuessInput = ({ 
-  searchQuery, 
-  setSearchQuery, 
-  suggestions, 
-  isSearching, 
+export const GuessInput = ({
+  searchQuery,
+  setSearchQuery,
+  suggestions,
+  isSearching,
   onSelect,
-  disabled 
+  disabled,
 }: GuessInputProps) => {
   return (
-    <div className="relative w-full max-w-2xl mx-auto z-50">
-      <div className="relative">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          disabled={disabled}
-          placeholder="Titre de la musique ou artiste..."
-          className="w-full bg-[#3B0764] border-2 border-purple-500/50 text-white text-xl md:text-2xl font-bold py-4 px-6 rounded-xl focus:outline-none focus:border-[#1DB954] shadow-lg disabled:opacity-50 transition-colors"
-        />
-        {isSearching && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <div className="w-6 h-6 border-2 border-purple-500 border-t-[#1DB954] rounded-full animate-spin"></div>
-          </div>
-        )}
-      </div>
+    <div className="relative w-full max-w-md">
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        disabled={disabled}
+        placeholder="Quel est ce titre ?"
+        autoComplete="off"
+        className="w-full bg-white/10 border-2 border-purple-400/50 focus:border-[#1DB954] text-white placeholder-purple-300 text-lg font-semibold px-5 py-4 rounded-xl focus:outline-none transition-colors disabled:opacity-50"
+      />
 
+      {/* Indicateur de recherche en cours */}
+      {isSearching && (
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-purple-300 animate-pulse">
+          ...
+        </span>
+      )}
+
+      {/* Liste des suggestions : superposée (absolute) pour ne pas
+          décaler la mise en page quand elle apparaît */}
       {suggestions.length > 0 && !disabled && (
-        <ul className="absolute top-full left-0 right-0 mt-2 bg-[#2D054D] border border-purple-500/30 rounded-xl overflow-hidden shadow-2xl max-h-64 overflow-y-auto custom-scrollbar">
-          {suggestions.map((track) => (
-            <li key={track.id}>
+        <ul className="absolute top-full mt-2 w-full bg-[#2D054D] rounded-xl overflow-hidden shadow-2xl z-20 max-h-72 overflow-y-auto">
+          {suggestions.map((suggestion) => (
+            <li key={suggestion.id}>
               <button
-                onClick={() => onSelect(track.id)}
-                className="w-full text-left flex items-center gap-4 p-3 hover:bg-purple-800/80 transition-colors border-b border-purple-500/10 last:border-none"
+                // ⚠️ LA suggestion ENTIÈRE (contrat submitSongGuess) —
+                // surtout pas onSelect(suggestion.id)
+                onClick={() => onSelect(suggestion)}
+                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-white/10 text-left transition-colors"
               >
-                <div className="w-12 h-12 bg-purple-900 rounded flex-shrink-0 overflow-hidden">
-                  {track.imageUrl && <img src={track.imageUrl} alt={track.title} className="w-full h-full object-cover" />}
-                </div>
-                <div className="flex flex-col overflow-hidden">
-                  <span className="text-white font-bold truncate">{track.title}</span>
-                  <span className="text-purple-300 text-sm truncate">{track.artist}</span>
+                {suggestion.imageUrl && (
+                  <img
+                    src={suggestion.imageUrl}
+                    alt=""
+                    className="w-10 h-10 rounded object-cover shrink-0"
+                  />
+                )}
+                <div className="min-w-0">
+                  <p className="font-bold text-sm truncate">{suggestion.title}</p>
+                  <p className="text-xs text-purple-300 truncate">
+                    {suggestion.artist}
+                  </p>
                 </div>
               </button>
             </li>
@@ -49,3 +68,5 @@ export const GuessInput = ({
     </div>
   );
 };
+
+export default GuessInput;

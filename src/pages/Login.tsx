@@ -8,7 +8,7 @@ export const Login =()=>{
         <div className="min-h-screen bg-gradient-to-br from-purple-900 to-purple-700 flex flex-col items-center justify-center p-4 font-sans">
             <h1 className="text-5xl md:text-7xl font-black text-white mb-12 drop-shadow-lg tracking-widest uppercase">Spoti-Blind</h1>
             <div className="w-full max-w-sm bg-purple-950/40 border border-purple-500/30 rounded-xl p-8 shadow-2xl backdrop-blur-sm">
-            {isNewUser ? (
+            {!isNewUser ? (
                 <div className="flex flex-col items-center gap-6">
                     <Button variant="spotify" onClick={handleSpotifyLogin}>
                         <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
