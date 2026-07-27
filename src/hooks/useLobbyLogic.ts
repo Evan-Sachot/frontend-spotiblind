@@ -11,6 +11,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
+import { useToast } from "../contexts/ToastContext";
 import { getUserFromToken } from "../utils/auth.util";
 import type { PublicPlayer } from "../types/game.types";
 
@@ -18,6 +19,7 @@ const ROOM_CODE_LENGTH = 6; // aligné sur le back (et sur ta maquette "8537C4")
 
 export const useLobbyLogic = () => {
   const { socket, isConnected } = useSocket();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const currentUser = getUserFromToken(); // { id, username } décodés du JWT
 
@@ -28,14 +30,24 @@ export const useLobbyLogic = () => {
   // payloads de salon) : isHost est DÉRIVÉ par comparaison avec notre
   // propre pseudo. Plus fiable qu'un booléen posé à la création.
   const [hostUsername, setHostUsername] = useState<string | null>(null);
-  const isHost = hostUsername !== null && hostUsername === currentUser?.username;
+  const isHost =
+    hostUsername !== null && hostUsername === currentUser?.username;
+  // GESTION DES MESSAGES — règle des 3 familles :
+  // - "error" (state) : erreurs de FORMULAIRE et états BLOQUANTS,
+  //   affichées inline/persistantes dans la page
+  // - transitoire ("X a rejoint", "code copié") : showToast, auto-expire
   const [error, setError] = useState("");
-  const [infoMessage, setInfoMessage] = useState(""); // "X a rejoint le salon", etc.
+  // Distingue une erreur de JOIN (à afficher inline sous l'input)
+  // d'une erreur serveur générale (à afficher en toast) : le
+  // listener "error" est unique, ce flag lui donne le contexte
+  const pendingJoinRef = useRef(false);
 
   // --- ÉTAT DE L'UI ---
   const [showJoinInput, setShowJoinInput] = useState(false);
   const [roomCodeInput, setRoomCodeInput] = useState("");
-  const [activeTab, setActiveTab] = useState<"presets" | "options" | "playlists">("options");
+  const [activeTab, setActiveTab] = useState<
+    "presets" | "options" | "playlists"
+  >("options");
 
   // --- RÉGLAGES DE PARTIE (synchronisés via settingsUpdated) ---
   const [rounds, setRoundsState] = useState(10);
@@ -76,13 +88,15 @@ export const useLobbyLogic = () => {
       setPlayers(data.players);
       setHostUsername(data.roomHost);
       setError("");
+      pendingJoinRef.current = false; // le join a réussi
     });
 
     // UN SEUL événement pour toute évolution de la liste des joueurs
     socket.on("roomUpdated", (data) => {
       setPlayers(data.players);
       setHostUsername(data.roomHost);
-      if (data.message) setInfoMessage(data.message);
+      // Événement transitoire -> toast auto-expirant
+      if (data.message) showToast(data.message, "info");
     });
 
     // L'hôte a fermé le salon (volontairement ou déconnexion définitive)
@@ -138,9 +152,18 @@ export const useLobbyLogic = () => {
       });
     });
 
-    // Canal d'erreur UNIQUE du contrat
+    // Canal d'erreur UNIQUE du contrat. Deux traitements :
+    // - erreur d'une tentative de JOIN -> inline sous l'input
+    //   (l'utilisateur doit pouvoir la relire en corrigeant le code)
+    // - toute autre erreur serveur (ex: "Aucune playlist
+    //   sélectionnée" au lancement) -> toast transitoire
     socket.on("error", (data) => {
-      setError(data.message);
+      if (pendingJoinRef.current) {
+        setError(data.message);
+        pendingJoinRef.current = false;
+      } else {
+        showToast(data.message, "error");
+      }
     });
 
     // Nettoyage : indispensable pour éviter les listeners fantômes
@@ -169,10 +192,14 @@ export const useLobbyLogic = () => {
     if (e) e.preventDefault();
     const code = roomCodeInput.trim().toUpperCase();
     // Aligné sur le back : codes à 6 caractères (ex: 8537C4)
+    // Erreur de FORMULAIRE -> inline, jamais en toast
     if (code.length !== ROOM_CODE_LENGTH) {
       setError(`Le code doit faire ${ROOM_CODE_LENGTH} caractères.`);
       return;
     }
+    // On arme le flag : si le serveur répond "error", le listener
+    // saura que c'est une erreur de join -> affichage inline
+    pendingJoinRef.current = true;
     // CONTRAT : une string nue, PAS un objet { roomCode }
     socket?.emit("joinRoom", code);
   };
@@ -211,7 +238,8 @@ export const useLobbyLogic = () => {
   const copyInviteCode = () => {
     if (activeRoom) {
       navigator.clipboard.writeText(activeRoom);
-      setInfoMessage(`Code ${activeRoom} copié !`);
+      // Feedback transitoire -> toast success
+      showToast(`Code ${activeRoom} copié !`, "success");
     }
   };
 
@@ -227,7 +255,6 @@ export const useLobbyLogic = () => {
     isHost,
     hostUsername, // pour la couronne dans PlayerSidebar
     error,
-    infoMessage,
     showJoinInput,
     roomCodeInput,
     activeTab,

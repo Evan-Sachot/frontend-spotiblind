@@ -55,10 +55,8 @@ export const Game = () => {
         </div>
       </header>
 
-      {/* Message d'info éphémère ("X a trouvé !", déconnexions...) */}
-      {game.infoMessage && (
-        <p className="text-center text-sm text-purple-200">{game.infoMessage}</p>
-      )}
+      {/* Les notifications ("X a trouvé !", déconnexions, erreurs)
+          sont désormais gérées par le ToastContext global */}
 
       {/* ===================== CONTENU CENTRAL ===================== */}
       {/* Le main est "relative" : la section est centrée par rapport à
@@ -69,136 +67,152 @@ export const Game = () => {
         {/* --- Zone principale (change selon la phase) --- */}
         <section className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-8">
           <div className="w-full max-w-xl flex flex-col items-center gap-6">
-          {/* PHASE : la partie se lance */}
-          {game.phase === "STARTING" && (
-            <h2 className="text-3xl font-black animate-pulse">
-              La partie commence...
-            </h2>
-          )}
+            {/* PHASE : la partie se lance */}
+            {game.phase === "STARTING" && (
+              <h2 className="text-3xl font-black animate-pulse">
+                La partie commence...
+              </h2>
+            )}
 
-          {/* PHASE : deviner la musique */}
-          {game.phase === "GUESS_SONG" && (
-            <>
-              {/* Jauge de temps : plus de /30 en dur, on utilise totalTime */}
-              <TimerGauge timeLeft={game.timeLeft} totalTime={game.totalTime} />
-
-              {/* Autoplay bloqué par le navigateur : bouton de secours */}
-              {game.isAudioBlocked && (
-                <button
-                  onClick={game.enableAudio}
-                  className="bg-white text-purple-900 font-bold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform"
-                >
-                  🔊 Activer le son
-                </button>
-              )}
-
-              {game.hasFoundSong ? (
-                <p className="text-2xl font-black text-green-400">
-                  Trouvé ! +10 points 🎉
-                </p>
-              ) : (
-                <GuessInput
-                  searchQuery={game.searchQuery}
-                  setSearchQuery={game.setSearchQuery}
-                  suggestions={game.suggestions}
-                  isSearching={game.isSearching}
-                  onSelect={game.submitSongGuess}
-                  disabled={game.hasFoundSong}
+            {/* PHASE : deviner la musique */}
+            {game.phase === "GUESS_SONG" && (
+              <>
+                {/* Jauge de temps : plus de /30 en dur, on utilise totalTime */}
+                <TimerGauge
+                  timeLeft={game.timeLeft}
+                  totalTime={game.totalTime}
                 />
-              )}
 
-              {/* Feedback bordure rouge de la maquette : mauvaise réponse */}
-              {game.lastGuessWrong && !game.hasFoundSong && (
-                <p className="text-red-400 font-bold">Raté, réessaie !</p>
-              )}
-            </>
-          )}
-
-          {/* PHASE : voter le propriétaire de la musique */}
-          {game.phase === "GUESS_OWNER" && game.revealedTrack && (
-            <>
-              <TimerGauge timeLeft={game.timeLeft} totalTime={game.totalTime} />
-
-              {/* Pochette de l'album révélée avec la réponse */}
-              {game.revealedTrack.imageUrl && (
-                <img
-                  src={game.revealedTrack.imageUrl}
-                  alt={`Pochette de ${game.revealedTrack.title}`}
-                  className="w-44 h-44 rounded-xl shadow-2xl object-cover border-2 border-white/20"
-                />
-              )}
-
-              <div className="text-center">
-                <p className="text-sm uppercase tracking-widest text-purple-200">
-                  C'était...
-                </p>
-                <h2 className="text-3xl font-black">{game.revealedTrack.title}</h2>
-                <p className="text-xl text-purple-200">{game.revealedTrack.artist}</p>
-              </div>
-
-              <p className="font-semibold">Dans la playlist de qui ?</p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {game.players.map((player) => (
+                {/* Autoplay bloqué par le navigateur : bouton de secours */}
+                {game.isAudioBlocked && (
                   <button
-                    key={player.id}
-                    onClick={() => game.submitOwnerGuess(player.id)}
-                    className={`px-6 py-3 rounded-full font-bold shadow-lg transition-transform hover:scale-105 ${
-                      game.myOwnerVote === player.id
-                        ? "bg-green-400 text-purple-950" // mon vote actuel (modifiable)
-                        : "bg-white/90 text-purple-900"
-                    }`}
+                    onClick={game.enableAudio}
+                    className="bg-white text-purple-900 font-bold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform"
                   >
-                    {player.username}
+                    🔊 Activer le son
                   </button>
-                ))}
+                )}
+
+                {game.hasFoundSong ? (
+                  <p className="text-2xl font-black text-green-400">
+                    Trouvé ! +10 points 🎉
+                  </p>
+                ) : (
+                  <GuessInput
+                    searchQuery={game.searchQuery}
+                    setSearchQuery={game.setSearchQuery}
+                    suggestions={game.suggestions}
+                    isSearching={game.isSearching}
+                    onSelect={game.submitSongGuess}
+                    disabled={game.hasFoundSong}
+                  />
+                )}
+
+                {/* Feedback bordure rouge de la maquette : mauvaise réponse */}
+                {game.lastGuessWrong && !game.hasFoundSong && (
+                  <p className="text-red-400 font-bold">Raté, réessaie !</p>
+                )}
+              </>
+            )}
+
+            {/* PHASE : voter le propriétaire de la musique */}
+            {game.phase === "GUESS_OWNER" && game.revealedTrack && (
+              <>
+                <TimerGauge
+                  timeLeft={game.timeLeft}
+                  totalTime={game.totalTime}
+                />
+
+                {/* Pochette de l'album révélée avec la réponse */}
+                {game.revealedTrack.imageUrl && (
+                  <img
+                    src={game.revealedTrack.imageUrl}
+                    alt={`Pochette de ${game.revealedTrack.title}`}
+                    className="w-44 h-44 rounded-xl shadow-2xl object-cover border-2 border-white/20"
+                  />
+                )}
+
+                <div className="text-center">
+                  <p className="text-sm uppercase tracking-widest text-purple-200">
+                    C'était...
+                  </p>
+                  <h2 className="text-3xl font-black">
+                    {game.revealedTrack.title}
+                  </h2>
+                  <p className="text-xl text-purple-200">
+                    {game.revealedTrack.artist}
+                  </p>
+                </div>
+
+                <p className="font-semibold">Dans la playlist de qui ?</p>
+                <div className="flex flex-wrap gap-3 justify-center">
+                  {game.players.map((player) => (
+                    <button
+                      key={player.id}
+                      onClick={() => game.submitOwnerGuess(player.id)}
+                      className={`px-6 py-3 rounded-full font-bold shadow-lg transition-transform hover:scale-105 ${
+                        game.myOwnerVote === player.id
+                          ? "bg-green-400 text-purple-950" // mon vote actuel (modifiable)
+                          : "bg-white/90 text-purple-900"
+                      }`}
+                    >
+                      {player.username}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* PHASE : bilan de la manche */}
+            {game.phase === "ROUND_RESULT" && (
+              <div className="text-center">
+                <h2 className="text-2xl font-black mb-2">Bilan de la manche</h2>
+                <p className="text-purple-200">
+                  {ownerNames.length > 0
+                    ? `Cette musique venait de : ${ownerNames.join(", ")}`
+                    : "Personne ne possédait cette musique ?!"}
+                </p>
+                <p className="mt-4 text-sm animate-pulse">
+                  Manche suivante dans un instant...
+                </p>
               </div>
-            </>
-          )}
+            )}
 
-          {/* PHASE : bilan de la manche */}
-          {game.phase === "ROUND_RESULT" && (
-            <div className="text-center">
-              <h2 className="text-2xl font-black mb-2">Bilan de la manche</h2>
-              <p className="text-purple-200">
-                {ownerNames.length > 0
-                  ? `Cette musique venait de : ${ownerNames.join(", ")}`
-                  : "Personne ne possédait cette musique ?!"}
-              </p>
-              <p className="mt-4 text-sm animate-pulse">Manche suivante dans un instant...</p>
-            </div>
-          )}
+            {/* PHASE : podium final */}
+            {game.phase === "SCOREBOARD" && (
+              <div className="text-center w-full max-w-md">
+                <h2 className="text-3xl font-black mb-6">
+                  🏆 Classement final
+                </h2>
+                <ol className="flex flex-col gap-2">
+                  {sortedPlayers.map((player, index) => (
+                    <li
+                      key={player.id}
+                      className={`flex justify-between px-6 py-3 rounded-lg font-bold ${
+                        index === 0
+                          ? "bg-yellow-400 text-purple-950"
+                          : "bg-white/10"
+                      } ${player.id === game.currentUser?.id ? "border-2 border-white" : ""}`}
+                    >
+                      <span>
+                        {index + 1}. {player.username}
+                      </span>
+                      <span>{player.score} pts</span>
+                    </li>
+                  ))}
+                </ol>
 
-          {/* PHASE : podium final */}
-          {game.phase === "SCOREBOARD" && (
-            <div className="text-center w-full max-w-md">
-              <h2 className="text-3xl font-black mb-6">🏆 Classement final</h2>
-              <ol className="flex flex-col gap-2">
-                {sortedPlayers.map((player, index) => (
-                  <li
-                    key={player.id}
-                    className={`flex justify-between px-6 py-3 rounded-lg font-bold ${
-                      index === 0 ? "bg-yellow-400 text-purple-950" : "bg-white/10"
-                    } ${player.id === game.currentUser?.id ? "border-2 border-white" : ""}`}
+                {/* Seul l'hôte peut relancer (le back re-vérifie de toute façon) */}
+                {game.isHost && (
+                  <button
+                    onClick={game.playAgain}
+                    className="mt-8 bg-white text-purple-900 font-black px-8 py-4 rounded-full shadow-lg hover:scale-105 transition-transform"
                   >
-                    <span>
-                      {index + 1}. {player.username}
-                    </span>
-                    <span>{player.score} pts</span>
-                  </li>
-                ))}
-              </ol>
-
-              {/* Seul l'hôte peut relancer (le back re-vérifie de toute façon) */}
-              {game.isHost && (
-                <button
-                  onClick={game.playAgain}
-                  className="mt-8 bg-white text-purple-900 font-black px-8 py-4 rounded-full shadow-lg hover:scale-105 transition-transform"
-                >
-                  Rejouer
-                </button>
-              )}
-            </div>
-          )}
+                    Rejouer
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </section>
 

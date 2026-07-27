@@ -8,12 +8,16 @@
 // ============================================================
 import type { PlayerSidebarProps } from "../../types/game.types";
 
-export const PlayerSidebar = ({ roomCode, players, onInvite }: PlayerSidebarProps) => {
+export const PlayerSidebar = ({
+  roomCode,
+  players,
+  onInvite,
+}: PlayerSidebarProps) => {
   return (
     <div className="w-64 bg-[#3B0764] rounded-2xl flex flex-col p-6 shadow-2xl">
       {/* CODE DU SALON : cliquable -> copie dans le presse-papier.
           onInvite = copyInviteCode du hook (le feedback "Code copié !"
-          s'affiche via infoMessage dans Lobby.tsx) */}
+          s'affiche via le toast global) */}
       <button
         onClick={onInvite}
         title="Cliquer pour copier le code"
@@ -39,9 +43,13 @@ export const PlayerSidebar = ({ roomCode, players, onInvite }: PlayerSidebarProp
                 className={`w-2 h-2 rounded-full shrink-0 ${
                   p.isReady ? "bg-[#1DB954]" : "bg-white/20"
                 }`}
-                title={p.isReady ? "Playlist choisie" : "En attente de playlist"}
+                title={
+                  p.isReady ? "Playlist choisie" : "En attente de playlist"
+                }
               />
-              <span className="text-sm font-semibold truncate">{p.username}</span>
+              <span className="text-sm font-semibold truncate">
+                {p.username}
+              </span>
             </div>
 
             {/* Rôle du joueur */}

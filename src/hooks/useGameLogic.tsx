@@ -14,6 +14,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
+import { useToast } from "../contexts/ToastContext";
 import { getUserFromToken } from "../utils/auth.util";
 import { API_URL } from "../config/env";
 import type {
@@ -28,6 +29,7 @@ export const useGameLogic = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentUser = getUserFromToken();
+  const { showToast } = useToast();
 
   // --- ÉTAT DE LA PARTIE (dicté par le serveur) ---
   const [phase, setPhase] = useState<FrontGamePhase>("STARTING");
@@ -46,10 +48,13 @@ export const useGameLogic = () => {
   const [players, setPlayers] = useState<PublicPlayer[]>(
     routerState?.players ?? [],
   );
-  const [revealedTrack, setRevealedTrack] = useState<RevealedTrack | null>(null); // titre/artiste révélés en GUESS_OWNER
+  const [revealedTrack, setRevealedTrack] = useState<RevealedTrack | null>(
+    null,
+  ); // titre/artiste révélés en GUESS_OWNER
   const [roundOwnerIds, setRoundOwnerIds] = useState<number[]>([]); // les vrais propriétaires (affichés au ROUND_RESULT)
-  const [playersWhoFound, setPlayersWhoFound] = useState<PublicPlayer["id"][]>([]); // qui a trouvé la musique (badge vert)
-  const [infoMessage, setInfoMessage] = useState("");
+  const [playersWhoFound, setPlayersWhoFound] = useState<PublicPlayer["id"][]>(
+    [],
+  ); // qui a trouvé la musique (badge vert)
 
   // --- ÉTAT PERSONNEL DU JOUEUR ---
   const [hasFoundSong, setHasFoundSong] = useState(false); // j'ai trouvé -> input désactivé
@@ -181,7 +186,7 @@ export const useGameLogic = () => {
     // --- UN JOUEUR (peut-être moi) A TROUVÉ ---
     socket.on("playerFoundSong", (data) => {
       setPlayersWhoFound((prev) => [...prev, data.userId]);
-      setInfoMessage(`${data.username} a trouvé !`);
+      showToast(`${data.username} a trouvé ! 🎉`, "success");
     });
 
     // --- FEEDBACK PERSONNEL sur MA réponse ---
@@ -218,7 +223,7 @@ export const useGameLogic = () => {
     // --- Liste des joueurs modifiée en pleine partie (déconnexion) ---
     socket.on("roomUpdated", (data) => {
       setPlayers(data.players);
-      if (data.message) setInfoMessage(data.message);
+      if (data.message) showToast(data.message, "info");
     });
 
     // --- Le salon a fermé (hôte parti) ---
@@ -227,7 +232,7 @@ export const useGameLogic = () => {
     });
 
     socket.on("error", (data) => {
-      setInfoMessage(data.message);
+      showToast(data.message, "error");
     });
 
     // Nettoyage complet au démontage : listeners, chrono ET audio
@@ -328,7 +333,6 @@ export const useGameLogic = () => {
     revealedTrack,
     roundOwnerIds,
     playersWhoFound,
-    infoMessage,
     currentUser,
     // état personnel
     hasFoundSong,

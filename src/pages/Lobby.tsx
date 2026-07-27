@@ -30,8 +30,18 @@ export const Lobby = () => {
     <div className="min-h-screen bg-gradient-to-b from-[#5c258d] to-[#430a68] text-white font-sans flex flex-col">
       <header className="flex justify-between items-center p-6">
         <button className="text-white hover:opacity-80 transition-opacity">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            className="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         </button>
         {/* Bouton de déconnexion (remplace l'avatar de la maquette) */}
@@ -39,7 +49,6 @@ export const Lobby = () => {
       </header>
 
       {!lobby.activeRoom ? (
-
         <div className="flex-1 flex flex-col items-center justify-center p-4">
           <h1 className="text-6xl md:text-8xl font-black mb-16 drop-shadow-xl tracking-wider uppercase">
             Spoti-Blind
@@ -51,7 +60,6 @@ export const Lobby = () => {
           )}
 
           <div className="flex flex-col md:flex-row gap-6 w-full max-w-2xl justify-center">
-
             {!lobby.showJoinInput ? (
               <button
                 onClick={lobby.handleJoinClick}
@@ -64,7 +72,9 @@ export const Lobby = () => {
                 <input
                   type="text"
                   value={lobby.roomCodeInput}
-                  onChange={(e) => lobby.setRoomCodeInput(e.target.value.toUpperCase())}
+                  onChange={(e) =>
+                    lobby.setRoomCodeInput(e.target.value.toUpperCase())
+                  }
                   placeholder="CODE (8537C4)"
                   maxLength={6} /* aligné sur le back : codes à 6 caractères */
                   className="w-full bg-white/10 border-2 border-[#1DB954] text-white text-center text-2xl font-black tracking-[0.5em] py-4 rounded-lg focus:outline-none"
@@ -76,7 +86,11 @@ export const Lobby = () => {
                 >
                   Valider
                 </button>
-                {lobby.error && <span className="text-red-400 text-sm text-center">{lobby.error}</span>}
+                {lobby.error && (
+                  <span className="text-red-400 text-sm text-center">
+                    {lobby.error}
+                  </span>
+                )}
               </div>
             )}
             <button
@@ -87,34 +101,16 @@ export const Lobby = () => {
             </button>
           </div>
         </div>
-
       ) : (
-
         <div className="flex-1 flex items-stretch p-6 gap-6 max-w-7xl w-full mx-auto">
-
           <PlayerSidebar
             roomCode={lobby.activeRoom}
-            players={sidebarPlayers} /* le format adapté, plus les joueurs bruts */
+            players={
+              sidebarPlayers
+            } /* le format adapté, plus les joueurs bruts */
             onInvite={lobby.copyInviteCode}
           />
           <div className="flex-1 flex flex-col relative">
-
-            {/* Messages du salon en TOAST FLOTTANT (position fixed) :
-                ils se superposent en haut de l'écran au lieu de
-                s'insérer dans le flux — plus AUCUN décalage de la
-                sidebar ou des onglets quand un message apparaît */}
-            {(lobby.infoMessage || lobby.error) && (
-              <p
-                className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 px-6 py-2 rounded-full shadow-2xl font-bold text-sm ${
-                  lobby.error
-                    ? "bg-red-500/95 text-white"
-                    : "bg-[#1DB954]/95 text-black"
-                }`}
-              >
-                {lobby.error || lobby.infoMessage}
-              </p>
-            )}
-
             <div className="flex gap-4 mb-4">
               <button
                 onClick={() => lobby.setActiveTab("presets")}
@@ -136,7 +132,6 @@ export const Lobby = () => {
               </button>
             </div>
             <div className="flex-1 bg-[#2D054D] rounded-b-xl rounded-tr-xl p-8 shadow-2xl overflow-hidden flex flex-col">
-
               {lobby.activeTab === "options" && (
                 <GameOptions
                   isHost={lobby.isHost}

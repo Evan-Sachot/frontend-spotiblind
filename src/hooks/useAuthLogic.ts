@@ -90,7 +90,8 @@ export const useAuthLogic = () => {
         }
         navigate("/lobby");
       } else {
-        setError("Erreur lors de la mise à jour du pseudo.");
+        const data = await response.json().catch(() => null);
+        setError(data?.message ?? "Erreur lors de la mise à jour du pseudo.");
       }
     } catch {
       setError("Le serveur est inaccessible.");
