@@ -25,11 +25,11 @@ export const Game = () => {
   return (
     <div className="h-screen w-screen bg-gradient-to-b from-[#5c258d] to-[#430a68] text-white font-sans flex flex-col overflow-hidden relative">
       {/* ===================== HEADER ===================== */}
-      <header className="flex justify-between items-center gap-2 p-3 md:p-6 shrink-0 z-10">
+      <header className="w-full flex justify-between items-center gap-2 p-3 md:p-6 shrink-0 z-10 overflow-hidden">
         <div className="bg-white/90 text-black font-semibold text-sm rounded-full flex items-center shadow-lg">
           <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
           <span className="w-2 h-2 rounded-full bg-[#1DB954]" title="Connecté" />
-          <span className="font-bold text-sm truncate max-w-[140px]">
+          <span className="hidden sm:inline font-bold text-sm truncate max-w-[140px]">
           {game.currentUser?.username}
           </span>
           </div>
@@ -43,7 +43,7 @@ export const Game = () => {
 
         <div className="flex items-center gap-4">
           {/* Contrôle du volume (persisté via localStorage dans le hook) */}
-          <div className="flex items-center gap-2 bg-white/10 rounded-full px-2 md:px-4 py-2">
+          <div className="hidden sm:flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
             <span className="text-sm">{game.volume === 0 ? "🔇" : "🔊"}</span>
             <input
               type="range"
@@ -70,7 +70,7 @@ export const Game = () => {
           serait centré dans "l'espace restant" et paraîtrait déporté */}
       <main className="flex-1 relative w-full min-h-0 flex flex-col md:block overflow-y-auto md:overflow-visible">
         {/* --- Zone principale (change selon la phase) --- */}
-        <section className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-4 md:absolute md:inset-0 md:px-8">
+        <section className="flex-1 flex flex-col items-center justify-start pt-8 md:justify-center gap-6 px-4 py-4 md:absolute md:inset-0 md:px-8 md:pt-0">
           <div className="w-full max-w-xl flex flex-col items-center gap-6">
             {/* PHASE : la partie se lance */}
             {game.phase === "STARTING" && (

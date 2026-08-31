@@ -122,7 +122,7 @@ export const useGameLogic = () => {
   // ============================================================
   useEffect(() => {
     if (!socket) {
-      navigate("/lobby");
+       navigate(getUserFromToken() ? "/lobby" : "/login", { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
@@ -313,7 +313,7 @@ export const useGameLogic = () => {
   // Bouton "Rejouer" du scoreboard (hôte uniquement, vérifié côté back)
   const playAgain = () => socket?.emit("playAgain");
 
-  // Bouton Activer le son si l'autoplay a été bloqué
+  // Bouton "Activer le son" si l'autoplay a été bloqué
   const enableAudio = () => {
     audioRef.current
       ?.play()

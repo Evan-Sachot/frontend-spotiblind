@@ -35,8 +35,8 @@ export const PlayerSidebar = ({
         {players.map((p) => (
           <li
             key={p.id}
-            className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2"
-          >
+            className="flex items-center justify-between gap-3 bg-white/5 rounded-lg px-3 py-2">
+          
             <div className="flex items-center gap-2 min-w-0">
               {/* Pastille verte = a choisi sa playlist (prêt) */}
               <span
