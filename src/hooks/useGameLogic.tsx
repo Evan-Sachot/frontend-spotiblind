@@ -274,7 +274,6 @@ export const useGameLogic = () => {
         );
         if (response.ok) {
           const data = await response.json();
-          // CONTRAT : le back renvoie { tracks: [...] }
           setSuggestions(data.tracks ?? []);
         }
       } catch (error) {
@@ -314,7 +313,7 @@ export const useGameLogic = () => {
   // Bouton "Rejouer" du scoreboard (hôte uniquement, vérifié côté back)
   const playAgain = () => socket?.emit("playAgain");
 
-  // Bouton "Activer le son" si l'autoplay a été bloqué
+  // Bouton Activer le son si l'autoplay a été bloqué
   const enableAudio = () => {
     audioRef.current
       ?.play()

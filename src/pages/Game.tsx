@@ -25,20 +25,25 @@ export const Game = () => {
   return (
     <div className="h-screen w-screen bg-gradient-to-b from-[#5c258d] to-[#430a68] text-white font-sans flex flex-col overflow-hidden relative">
       {/* ===================== HEADER ===================== */}
-      <header className="flex justify-between items-center p-6 shrink-0 z-10">
+      <header className="flex justify-between items-center gap-2 p-3 md:p-6 shrink-0 z-10">
         <div className="bg-white/90 text-black font-semibold text-sm rounded-full flex items-center shadow-lg">
-          <span className="px-6 py-2">Mode de jeu</span>
-          <span className="px-6 py-2 border-l border-gray-300 font-bold">
+          <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
+          <span className="w-2 h-2 rounded-full bg-[#1DB954]" title="Connecté" />
+          <span className="font-bold text-sm truncate max-w-[140px]">
+          {game.currentUser?.username}
+          </span>
+          </div>
+          <span className="px-3 md:px-6py-2 border-l border-gray-300 font-bold">
             {game.roomCode}
           </span>
-          <span className="px-6 py-2 border-l border-gray-300">
+          <span className="px-3 md:px-6 py-2 border-l border-gray-300">
             {game.currentRound}/{game.totalRounds}
           </span>
         </div>
 
         <div className="flex items-center gap-4">
           {/* Contrôle du volume (persisté via localStorage dans le hook) */}
-          <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
+          <div className="flex items-center gap-2 bg-white/10 rounded-full px-2 md:px-4 py-2">
             <span className="text-sm">{game.volume === 0 ? "🔇" : "🔊"}</span>
             <input
               type="range"
@@ -46,7 +51,7 @@ export const Game = () => {
               max={100}
               value={Math.round(game.volume * 100)}
               onChange={(e) => game.setVolume(Number(e.target.value) / 100)}
-              className="w-24 accent-[#1DB954] cursor-pointer"
+              className="w-16 md:w-24 accent-[#1DB954] cursor-pointer"
               title={`Volume : ${Math.round(game.volume * 100)}%`}
             />
           </div>
@@ -63,9 +68,9 @@ export const Game = () => {
           l'ÉCRAN ENTIER (absolute inset-0), et la sidebar flotte en
           overlay à droite SANS décaler le centre — sinon le contenu
           serait centré dans "l'espace restant" et paraîtrait déporté */}
-      <main className="flex-1 relative w-full min-h-0">
+      <main className="flex-1 relative w-full min-h-0 flex flex-col md:block overflow-y-auto md:overflow-visible">
         {/* --- Zone principale (change selon la phase) --- */}
-        <section className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-8">
+        <section className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-4 md:absolute md:inset-0 md:px-8">
           <div className="w-full max-w-xl flex flex-col items-center gap-6">
             {/* PHASE : la partie se lance */}
             {game.phase === "STARTING" && (
@@ -219,7 +224,7 @@ export const Game = () => {
         {/* --- Sidebar scores : OVERLAY à droite, centré verticalement,
             n'influence pas le centrage du contenu principal --- */}
         {game.phase !== "SCOREBOARD" && (
-          <aside className="absolute right-6 top-1/2 -translate-y-1/2 w-60 bg-white/10 backdrop-blur-sm rounded-xl p-4 max-h-[70%] overflow-y-auto shadow-xl">
+          <aside className="w-[calc(100%-2rem)] mx-auto mb-4 max-h-40 overflow-y-auto bg-white/10 backdrop-blur-sm rounded-xl p-4 shadow-xl md:absolute md:right-6 md:top-1/2 md:-translate-y-1/2 md:w-60 md:max-h-[70%] md:mx-0 md:mb-0">
             <h3 className="font-black uppercase text-sm tracking-widest mb-3">
               Joueurs
             </h3>

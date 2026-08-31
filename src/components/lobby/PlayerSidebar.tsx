@@ -14,7 +14,7 @@ export const PlayerSidebar = ({
   onInvite,
 }: PlayerSidebarProps) => {
   return (
-    <div className="w-64 bg-[#3B0764] rounded-2xl flex flex-col p-6 shadow-2xl">
+    <div className="w-full md:w-64 shrink-0 bg-[#3B0764] rounded-2xl flex flex-col p-4 md:p-6 shadow-2xl">
       {/* CODE DU SALON : cliquable -> copie dans le presse-papier.
           onInvite = copyInviteCode du hook (le feedback "Code copié !"
           s'affiche via le toast global) */}
@@ -31,7 +31,7 @@ export const PlayerSidebar = ({
       </button>
 
       {/* LISTE DES JOUEURS : nom + rôle, sans avatar */}
-      <ul className="flex flex-col gap-2 flex-1 overflow-y-auto">
+      <ul className="flex flex-row flex-wrap md:flex-col gap-2 md:flex-1 overflow-y-auto">
         {players.map((p) => (
           <li
             key={p.id}

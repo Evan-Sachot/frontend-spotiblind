@@ -32,9 +32,9 @@ export const useAuthLogic = () => {
     if (!urlToken) return;
 
     localStorage.setItem("token", urlToken);
-    connect(); // le token existe maintenant : on ouvre le socket
+    connect(); // le token existe ouvre le socket
 
-    // On nettoie l'URL (le token ne doit pas rester visible/partageable)
+    // On nettoie l'URL (le token ne doit pas rester visible)
     window.history.replaceState({}, document.title, "/login");
 
     if (isNew) {
@@ -82,9 +82,6 @@ export const useAuthLogic = () => {
         const data = await response.json();
         if (data.token) {
           localStorage.setItem("token", data.token);
-          // ⚠️ CRUCIAL : le socket s'est connecté avec l'ANCIEN token
-          // (pseudo temporaire). On le recycle pour que le serveur
-          // connaisse le vrai pseudo (roomHost, scoreboard, etc.)
           disconnect();
           connect();
         }

@@ -29,28 +29,19 @@ export const Lobby = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#5c258d] to-[#430a68] text-white font-sans flex flex-col">
       <header className="flex justify-between items-center p-6">
-        <button className="text-white hover:opacity-80 transition-opacity">
-          <svg
-            className="w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
+        <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
+  <span className="w-2 h-2 rounded-full bg-[#1DB954]" title="Connecté" />
+  <span className="font-bold text-sm truncate max-w-[140px]">
+    {lobby.currentUser?.username}
+  </span>
+</div>
         {/* Bouton de déconnexion (remplace l'avatar de la maquette) */}
         <LogoutButton />
       </header>
 
       {!lobby.activeRoom ? (
         <div className="flex-1 flex flex-col items-center justify-center p-4">
-          <h1 className="text-6xl md:text-8xl font-black mb-16 drop-shadow-xl tracking-wider uppercase">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-10 md:mb-16 drop-shadow-xl tracking-wider uppercase text-center whitespace-nowrap">
             Spoti-Blind
           </h1>
 
@@ -102,7 +93,7 @@ export const Lobby = () => {
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-stretch p-6 gap-6 max-w-7xl w-full mx-auto">
+        <div className="flex-1 flex flex-col md:flex-row items-stretch p-4 md:p-6 gap-4 md:gap-6 max-w-7xl w-full mx-auto">
           <PlayerSidebar
             roomCode={lobby.activeRoom}
             players={
@@ -111,27 +102,27 @@ export const Lobby = () => {
             onInvite={lobby.copyInviteCode}
           />
           <div className="flex-1 flex flex-col relative">
-            <div className="flex gap-4 mb-4">
+            <div className="flex gap-2 md:gap-4 mb-4 overflow-x-auto">
               <button
                 onClick={() => lobby.setActiveTab("presets")}
-                className={`px-8 py-3 rounded-t-xl font-bold text-lg transition-colors ${lobby.activeTab === "presets" ? "bg-[#2D054D] text-white" : "bg-[#2D054D]/50 text-purple-400 hover:text-white"}`}
+                className={`px-4 md:px-8 py-2 md:py-3 rounded-t-xl font-bold text-base md:text-lg whitespace-nowrap transition-colors ${lobby.activeTab === "presets" ? "bg-[#2D054D] text-white" : "bg-[#2D054D]/50 text-purple-400 hover:text-white"}`}
               >
                 préréglages
               </button>
               <button
                 onClick={() => lobby.setActiveTab("options")}
-                className={`px-8 py-3 rounded-t-xl font-bold text-lg transition-colors ${lobby.activeTab === "options" ? "bg-[#2D054D] text-white" : "bg-[#2D054D]/50 text-purple-400 hover:text-white"}`}
+                className={`px-4 md:px-8 py-2 md:py-3 rounded-t-xl font-bold text-base md:text-lg whitespace-nowrap transition-colors ${lobby.activeTab === "options" ? "bg-[#2D054D] text-white" : "bg-[#2D054D]/50 text-purple-400 hover:text-white"}`}
               >
                 options
               </button>
               <button
                 onClick={() => lobby.setActiveTab("playlists")}
-                className={`px-8 py-3 rounded-t-xl font-bold text-lg transition-colors ${lobby.activeTab === "playlists" ? "bg-[#2D054D] text-white" : "bg-[#2D054D]/50 text-purple-400 hover:text-white"}`}
+                className={`px-4 md:px-8 py-2 md:py-3 rounded-t-xl font-bold text-base md:text-lg whitespace-nowrap transition-colors ${lobby.activeTab === "playlists" ? "bg-[#2D054D] text-white" : "bg-[#2D054D]/50 text-purple-400 hover:text-white"}`}
               >
                 playlists
               </button>
             </div>
-            <div className="flex-1 bg-[#2D054D] rounded-b-xl rounded-tr-xl p-8 shadow-2xl overflow-hidden flex flex-col">
+            <div className="flex-1 bg-[#2D054D] rounded-b-xl rounded-tr-xl p-4 md:p-8 shadow-2xl overflow-hidden flex flex-col">
               {lobby.activeTab === "options" && (
                 <GameOptions
                   isHost={lobby.isHost}
