@@ -1,12 +1,3 @@
-// ============================================================
-// PAGE GAME — L'écran de jeu, piloté par useGameLogic.
-// Une section par phase : STARTING -> GUESS_SONG -> GUESS_OWNER
-// -> ROUND_RESULT -> (boucle) -> SCOREBOARD.
-//
-// ⚠️ Plus AUCUNE donnée de piste ici : l'audio est géré dans le
-// hook (new Audio) et le front ne connaît JAMAIS le titre avant
-// que le serveur le révèle (anti-triche : rien dans l'inspecteur).
-// ============================================================
 import { useGameLogic } from "../hooks/useGameLogic";
 import { GuessInput } from "../components/game/GuessInput";
 import { LogoutButton } from "../components/ui/LogoutButton";
@@ -14,10 +5,8 @@ import { LogoutButton } from "../components/ui/LogoutButton";
 export const Game = () => {
   const game = useGameLogic();
 
-  // Tri décroissant pour le classement (copie : on ne mute pas le state)
   const sortedPlayers = [...game.players].sort((a, b) => b.score - a.score);
 
-  // Les usernames des propriétaires révélés au bilan de manche
   const ownerNames = game.players
     .filter((p) => game.roundOwnerIds.includes(p.id))
     .map((p) => p.username);
@@ -42,7 +31,6 @@ export const Game = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Contrôle du volume (persisté via localStorage dans le hook) */}
           <div className="hidden sm:flex items-center gap-2 bg-white/10 rounded-full px-4 py-2">
             <span className="text-sm">{game.volume === 0 ? "🔇" : "🔊"}</span>
             <input
@@ -60,35 +48,23 @@ export const Game = () => {
         </div>
       </header>
 
-      {/* Les notifications ("X a trouvé !", déconnexions, erreurs)
-          sont désormais gérées par le ToastContext global */}
-
       {/* ===================== CONTENU CENTRAL ===================== */}
-      {/* Le main est "relative" : la section est centrée par rapport à
-          l'ÉCRAN ENTIER (absolute inset-0), et la sidebar flotte en
-          overlay à droite SANS décaler le centre — sinon le contenu
-          serait centré dans "l'espace restant" et paraîtrait déporté */}
       <main className="flex-1 relative w-full min-h-0 flex flex-col md:block overflow-y-auto md:overflow-visible">
-        {/* --- Zone principale (change selon la phase) --- */}
         <section className="flex-1 flex flex-col items-center justify-start pt-8 md:justify-center gap-6 px-4 py-4 md:absolute md:inset-0 md:px-8 md:pt-0">
           <div className="w-full max-w-xl flex flex-col items-center gap-6">
-            {/* PHASE : la partie se lance */}
             {game.phase === "STARTING" && (
               <h2 className="text-3xl font-black animate-pulse">
                 La partie commence...
               </h2>
             )}
 
-            {/* PHASE : deviner la musique */}
             {game.phase === "GUESS_SONG" && (
               <>
-                {/* Jauge de temps : plus de /30 en dur, on utilise totalTime */}
                 <TimerGauge
                   timeLeft={game.timeLeft}
                   totalTime={game.totalTime}
                 />
 
-                {/* Autoplay bloqué par le navigateur : bouton de secours */}
                 {game.isAudioBlocked && (
                   <button
                     onClick={game.enableAudio}
@@ -113,14 +89,12 @@ export const Game = () => {
                   />
                 )}
 
-                {/* Feedback bordure rouge de la maquette : mauvaise réponse */}
                 {game.lastGuessWrong && !game.hasFoundSong && (
                   <p className="text-red-400 font-bold">Raté, réessaie !</p>
                 )}
               </>
             )}
 
-            {/* PHASE : voter le propriétaire de la musique */}
             {game.phase === "GUESS_OWNER" && game.revealedTrack && (
               <>
                 <TimerGauge
@@ -128,7 +102,6 @@ export const Game = () => {
                   totalTime={game.totalTime}
                 />
 
-                {/* Pochette de l'album révélée avec la réponse */}
                 {game.revealedTrack.imageUrl && (
                   <img
                     src={game.revealedTrack.imageUrl}
@@ -157,7 +130,7 @@ export const Game = () => {
                       onClick={() => game.submitOwnerGuess(player.id)}
                       className={`px-6 py-3 rounded-full font-bold shadow-lg transition-transform hover:scale-105 ${
                         game.myOwnerVote === player.id
-                          ? "bg-green-400 text-purple-950" // mon vote actuel (modifiable)
+                          ? "bg-green-400 text-purple-950" 
                           : "bg-white/90 text-purple-900"
                       }`}
                     >
@@ -207,7 +180,6 @@ export const Game = () => {
                   ))}
                 </ol>
 
-                {/* Seul l'hôte peut relancer (le back re-vérifie de toute façon) */}
                 {game.isHost && (
                   <button
                     onClick={game.playAgain}
@@ -221,8 +193,6 @@ export const Game = () => {
           </div>
         </section>
 
-        {/* --- Sidebar scores : OVERLAY à droite, centré verticalement,
-            n'influence pas le centrage du contenu principal --- */}
         {game.phase !== "SCOREBOARD" && (
           <aside className="w-[calc(100%-2rem)] mx-auto mb-4 max-h-40 overflow-y-auto bg-white/10 backdrop-blur-sm rounded-xl p-4 shadow-xl md:absolute md:right-6 md:top-1/2 md:-translate-y-1/2 md:w-60 md:max-h-[70%] md:mx-0 md:mb-0">
             <h3 className="font-black uppercase text-sm tracking-widest mb-3">
@@ -236,7 +206,6 @@ export const Game = () => {
                 >
                   <span className="font-semibold truncate">
                     {player.username}
-                    {/* Check vert : ce joueur a trouvé la musique en cours */}
                     {game.playersWhoFound.includes(player.id) && " ✅"}
                   </span>
                   <span className="font-bold">{player.score}</span>
@@ -250,11 +219,6 @@ export const Game = () => {
   );
 };
 
-// ------------------------------------------------------------
-// Petit composant local : la jauge de temps de la maquette.
-// Largeur = pourcentage du temps restant (fourni par le serveur
-// via duration, décompté localement par le hook).
-// ------------------------------------------------------------
 const TimerGauge = ({
   timeLeft,
   totalTime,

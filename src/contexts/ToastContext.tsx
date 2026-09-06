@@ -1,16 +1,3 @@
-// ============================================================
-// TOAST CONTEXT — Système de notifications global de l'app.
-// UN SEUL affichage pour tous les messages transitoires (lobby,
-// jeu, erreurs serveur asynchrones), au lieu des mécanismes
-// locaux hétérogènes qu'avaient chaque page.
-//
-// Caractéristiques :
-// - file d'attente : plusieurs toasts s'empilent sans s'écraser
-// - auto-expiration après 4 secondes
-// - clic pour fermer manuellement
-// - aria-live="polite" : les lecteurs d'écran annoncent les
-//   notifications sans interrompre l'utilisateur (accessibilité)
-// ============================================================
 import {
   createContext,
   useContext,
@@ -31,7 +18,6 @@ const ToastContext = createContext<ToastContextValue>({
   showToast: () => {},
 });
 
-// Styles par variante (couleurs cohérentes avec la charte du projet)
 const VARIANT_STYLES: Record<ToastVariant, string> = {
   success: "bg-[#1DB954]/95 text-black",
   error: "bg-red-500/95 text-white",

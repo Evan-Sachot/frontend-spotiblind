@@ -115,34 +115,24 @@ export const useGameLogic = () => {
     }, 1000);
   };
 
-  // ============================================================
-  // GARDE-FOU : arriver sur /game sans passer par le lobby
-  // (rafraîchissement, URL tapée à la main) -> retour au lobby,
-  // la reconnexion auto du back (roomRejoined) fera le reste
-  // ============================================================
   useEffect(() => {
     if (!socket) {
        navigate(getUserFromToken() ? "/lobby" : "/login", { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
-  // ============================================================
-  // ÉCOUTE DES ÉVÉNEMENTS SERVEUR
-  // ============================================================
+// EVENEMENTS SOCKET
   useEffect(() => {
     if (!socket) return;
 
-    // Création de l'objet audio une seule fois
     audioRef.current = new Audio();
 
-    // --- NOUVELLE MANCHE : phase de recherche de la musique ---
+// NOUVELLE MUSIQUE : phase GUESS_SONG
     socket.on("newTrack", (data) => {
       setPhase("GUESS_SONG");
       setCurrentRound(data.currentRound);
       setTotalRounds(data.totalRounds);
 
-      // Reset de tout ce qui appartient à la manche précédente
       setRevealedTrack(null);
       setRoundOwnerIds([]);
       setPlayersWhoFound([]);
@@ -152,7 +142,7 @@ export const useGameLogic = () => {
       setSearchQuery("");
       setSuggestions([]);
 
-      // Lancement de l'extrait audio (au volume choisi par le joueur)
+// LANCEMENT DE LA MUSIQUE
       if (audioRef.current) {
         audioRef.current.src = data.previewUrl;
         audioRef.current.volume = volumeRef.current;
@@ -160,17 +150,12 @@ export const useGameLogic = () => {
           .play()
           .then(() => setIsAudioBlocked(false))
           .catch(() => {
-            // Le navigateur bloque l'autoplay sans interaction :
-            // on l'indique à l'UI qui affichera un bouton "Activer le son"
             setIsAudioBlocked(true);
           });
       }
-
-      // Décompte local calé sur la durée décidée par le serveur
       startCountdown(data.duration);
     });
 
-    // --- FIN DE LA RECHERCHE : révélation + phase de vote ---
     socket.on("songPhaseEnded", (data) => {
       setPhase("GUESS_OWNER");
       setRevealedTrack({
@@ -178,36 +163,33 @@ export const useGameLogic = () => {
         artist: data.artist,
         imageUrl: data.imageUrl,
       });
-      // On coupe la musique : la réponse est affichée
       audioRef.current?.pause();
       startCountdown(data.duration);
     });
 
-    // --- UN JOUEUR (peut-être moi) A TROUVÉ ---
     socket.on("playerFoundSong", (data) => {
       setPlayersWhoFound((prev) => [...prev, data.userId]);
       showToast(`${data.username} a trouvé ! 🎉`, "success");
     });
 
-    // --- FEEDBACK PERSONNEL sur MA réponse ---
     socket.on("guessResult", (data) => {
       if (data.correct) {
-        setHasFoundSong(true); // désactive l'input pour cette manche
+        setHasFoundSong(true); 
         setLastGuessWrong(false);
       } else {
-        setLastGuessWrong(true); // bordure rouge sur l'input (maquette)
+        setLastGuessWrong(true); 
       }
     });
 
-    // --- BILAN DE MANCHE : propriétaires révélés + scores ---
+// BILAN DE LA MANCHE
     socket.on("roundSummary", (data) => {
       setPhase("ROUND_RESULT");
       setRoundOwnerIds(data.ownerIds);
-      setPlayers(data.players); // scores à jour, usernames inclus
+      setPlayers(data.players);
       stopCountdown();
     });
 
-    // --- FIN DE PARTIE : podium ---
+// FIN DE LA PARTIE
     socket.on("gameOver", (data) => {
       setPhase("SCOREBOARD");
       setPlayers(data.players);
@@ -215,18 +197,15 @@ export const useGameLogic = () => {
       audioRef.current?.pause();
     });
 
-    // --- L'HÔTE RELANCE : retour au lobby pour tout le monde ---
     socket.on("gameReset", () => {
       navigate("/lobby");
     });
 
-    // --- Liste des joueurs modifiée en pleine partie (déconnexion) ---
     socket.on("roomUpdated", (data) => {
       setPlayers(data.players);
       if (data.message) showToast(data.message, "info");
     });
 
-    // --- Le salon a fermé (hôte parti) ---
     socket.on("roomClosed", () => {
       navigate("/lobby");
     });
@@ -235,8 +214,6 @@ export const useGameLogic = () => {
       showToast(data.message, "error");
     });
 
-    // Nettoyage complet au démontage : listeners, chrono ET audio
-    // (sinon la musique continue de jouer sur la page suivante !)
     return () => {
       socket.off("newTrack");
       socket.off("songPhaseEnded");
@@ -252,12 +229,8 @@ export const useGameLogic = () => {
       audioRef.current?.pause();
       audioRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
-  // ============================================================
-  // AUTO-COMPLÉTION (debounce 300ms sur l'API back /spotify/search)
-  // ============================================================
   useEffect(() => {
     if (searchQuery.trim().length === 0) {
       setSuggestions([]);
@@ -285,15 +258,10 @@ export const useGameLogic = () => {
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
+// ACTION DU JOUEUR
 
-  // ============================================================
-  // ACTIONS DU JOUEUR
-  // ============================================================
 
-  // Phase GUESS_SONG : je clique sur une suggestion de l'auto-complétion
   const submitSongGuess = (suggestion: TrackSuggestion) => {
-    // CONTRAT : payload complet — le serveur valide par ID OU par
-    // titre+artiste normalisés (la même chanson a plusieurs IDs Spotify)
     socket?.emit("submitSongGuess", {
       trackId: suggestion.id,
       title: suggestion.title,
@@ -302,18 +270,13 @@ export const useGameLogic = () => {
     setSearchQuery("");
     setSuggestions([]);
   };
-
-  // Phase GUESS_OWNER : je vote pour un joueur
   const submitOwnerGuess = (ownerId: number) => {
-    // CONTRAT : un number nu, pas { ownerId }
     socket?.emit("submitOwnerGuess", ownerId);
-    setMyOwnerVote(ownerId); // feedback visuel immédiat (vote modifiable)
+    setMyOwnerVote(ownerId); 
   };
 
-  // Bouton "Rejouer" du scoreboard (hôte uniquement, vérifié côté back)
   const playAgain = () => socket?.emit("playAgain");
 
-  // Bouton "Activer le son" si l'autoplay a été bloqué
   const enableAudio = () => {
     audioRef.current
       ?.play()
@@ -322,7 +285,6 @@ export const useGameLogic = () => {
   };
 
   return {
-    // état de la partie
     phase,
     roomCode,
     isHost,
@@ -333,24 +295,19 @@ export const useGameLogic = () => {
     roundOwnerIds,
     playersWhoFound,
     currentUser,
-    // état personnel
     hasFoundSong,
     lastGuessWrong,
     myOwnerVote,
-    // chrono
     timeLeft,
     totalTime,
-    // audio
     isAudioBlocked,
     enableAudio,
     volume,
     setVolume,
-    // recherche
     searchQuery,
     setSearchQuery,
     suggestions,
     isSearching,
-    // actions
     submitSongGuess,
     submitOwnerGuess,
     playAgain,

@@ -1,0 +1,10 @@
+# Fichiers exclus du contexte de construction de l'image front-end.
+node_modules
+dist
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+*.md
+.vscode

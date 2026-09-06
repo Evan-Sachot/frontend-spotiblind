@@ -1,10 +1,3 @@
-// ============================================================
-// PLAYLIST SELECTOR — Grille de sélection de playlist du lobby.
-// Correction : la grille occupe désormais TOUTE la surface du
-// panneau, avec un nombre de colonnes qui s'adapte à la largeur
-// (auto-fill) au lieu d'un nombre de colonnes figé qui laissait
-// la moitié droite vide.
-// ============================================================
 import type { SpotifyPlaylist } from "../../types/playlist.types";
 
 interface PlaylistSelectorProps {
@@ -41,10 +34,6 @@ export const PlaylistSelector = ({
       <h3 className="font-bold text-lg mb-4 shrink-0">
         Choisis ta playlist pour la partie
       </h3>
-
-      {/* Zone scrollable : la grille remplit TOUTE la largeur.
-          auto-fill + minmax : autant de colonnes de 160px min que la
-          largeur le permet, les cartes s'étirent pour combler le reste */}
       <div className="flex-1 overflow-y-auto pr-2 min-h-0">
         <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 w-full">
           {playlists.map((playlist) => {

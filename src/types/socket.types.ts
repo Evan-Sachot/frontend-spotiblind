@@ -35,9 +35,6 @@ export interface ClientToServerEvents {
 // CE QUE LE SERVEUR A LE DROIT D'ENVOYER AU FRONT
 // ------------------------------------------------------------
 export interface ServerToClientEvents {
-  // roomHost (username de l'hôte) est présent dans tous les payloads
-  // de salon : il permet d'afficher la couronne et de savoir si JE
-  // suis l'hôte (comparaison avec le username décodé du JWT)
   roomCreated: (data: {
     roomCode: string;
     players: PublicPlayer[];
@@ -58,7 +55,7 @@ export interface ServerToClientEvents {
     roomCode: string;
     phase: GamePhase;
     players: PublicPlayer[];
-    roomHost: string; // permet de savoir si JE suis l'hôte à la reconnexion
+    roomHost: string;
   }) => void;
 
   error: (data: { message: string }) => void;
