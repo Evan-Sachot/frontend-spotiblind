@@ -106,7 +106,7 @@ export const Game = () => {
                   <img
                     src={game.revealedTrack.imageUrl}
                     alt={`Pochette de ${game.revealedTrack.title}`}
-                    className="w-28 h-28 lg:w-44 lg:h-44 rounded-xl shadow-2xl object-cover border-2 border-white/20"
+                    className="w-28 h-28 [@media(min-height:850px)]:w-44 [@media(min-height:850px)]:h-44 rounded-xl shadow-2xl object-cover border-2 border-white/20"
                   />
                 )}
 
