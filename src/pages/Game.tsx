@@ -50,7 +50,7 @@ export const Game = () => {
 
       {/* ===================== CONTENU CENTRAL ===================== */}
       <main className="flex-1 relative w-full min-h-0 flex flex-col md:block overflow-y-auto md:overflow-visible">
-        <section className="flex-1 flex flex-col items-center justify-start pt-8 md:justify-start md:pt-[15vh] gap-6 px-4 py-4 md:absolute md:inset-0 md:px-8 md:pt-0">
+        <section className="flex-1 flex flex-col items-center justify-start pt-8 md:justify-start md:pt-[15vh] md:overflow-y-auto gap-6 px-4 py-4 md:absolute md:inset-0 md:px-8 md:pt-0">
           <div className="w-full max-w-xl flex flex-col items-center gap-6">
             {game.phase === "STARTING" && (
               <h2 className="text-3xl font-black animate-pulse">
