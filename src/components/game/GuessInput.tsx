@@ -27,7 +27,7 @@ export const GuessInput = ({
       )}
 
       {suggestions.length > 0 && !disabled && (
-      <ul className="absolute top-full mt-2 w-full bg-[#2D054D] rounded-xl overflow-hidden shadow-2xl z-20 max-h-72 overflow-y-auto">
+      <ul className="absolute top-full mt-2 w-full max-h-[35vh] bg-[#2D054D] rounded-xl shadow-2xl z-50 overflow-y-auto">
           {suggestions.map((suggestion) => (
             <li key={suggestion.id}>
               <button
