@@ -6,7 +6,7 @@ export const Login =()=>{
     const {isNewUser, username, setUsername, error, handleSpotifyLogin, handleUsernameSubmit} = useAuthLogic();
 
     return(
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 to-purple-700 flex flex-col items-center justify-center p-4 font-sans">
+        <div className="min-h-screen bg-gradient-to-b from-[#5c258d] to-[#430a68] flex flex-col items-center justify-center p-4 font-sans">
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-12 drop-shadow-lg tracking-widest uppercase text-center whitespace-nowrap">Spoti-Blind</h1>
             <div className="w-full max-w-sm bg-purple-950/40 border border-purple-500/30 rounded-xl p-8 shadow-2xl backdrop-blur-sm">
             {!isNewUser ? (
