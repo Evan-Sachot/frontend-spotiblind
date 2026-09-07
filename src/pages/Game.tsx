@@ -50,7 +50,7 @@ export const Game = () => {
 
       {/* ===================== CONTENU CENTRAL ===================== */}
       <main className="flex-1 relative w-full min-h-0 flex flex-col md:block overflow-y-auto md:overflow-visible">
-        <section className="flex-1 flex flex-col items-center justify-start pt-8 md:justify-start md:pt-[15vh] md:overflow-y-auto gap-6 px-4 py-4 md:absolute md:inset-0 md:px-8 md:pt-0">
+        <section className="flex-1 overflow-y-auto flex flex-col items-center justify-start pt-6 pb-24 gap-4 px-4 md:absolute md:inset-0 md:px-8 md:pt-[8vh] md:pb-4 [@media(min-height:850px)]:justify-center [@media(min-height:850px)]:pt-0 [@media(min-height:850px)]:gap-6">
           <div className="w-full max-w-xl flex flex-col items-center gap-6">
             {game.phase === "STARTING" && (
               <h2 className="text-3xl font-black animate-pulse">
@@ -106,7 +106,7 @@ export const Game = () => {
                   <img
                     src={game.revealedTrack.imageUrl}
                     alt={`Pochette de ${game.revealedTrack.title}`}
-                    className="w-44 h-44 rounded-xl shadow-2xl object-cover border-2 border-white/20"
+                    className="w-28 h-28 lg:w-44 lg:h-44 rounded-xl shadow-2xl object-cover border-2 border-white/20"
                   />
                 )}
 
