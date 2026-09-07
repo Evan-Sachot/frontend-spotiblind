@@ -14,7 +14,7 @@ export const PlayerSidebar = ({
       >
         Code : <span className="font-black text-white">{roomCode}</span>
         <span className="block text-[10px] normal-case tracking-normal opacity-0 group-hover:opacity-100 transition-opacity">
-          📋 copier
+           copier
         </span>
       </button>
 

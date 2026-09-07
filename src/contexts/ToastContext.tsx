@@ -26,22 +26,16 @@ const VARIANT_STYLES: Record<ToastVariant, string> = {
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
-  // Compteur d'ids : une ref (et pas un state) car sa mise à jour
-  // ne doit pas déclencher de re-render
   const nextIdRef = useRef(0);
 
   const removeToast = useCallback((id: number) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  // useCallback : identité stable -> les callbacks socket enregistrés
-  // une seule fois au montage des hooks ne capturent pas une version
-  // périmée (même famille de piège que playersRef/volumeRef)
   const showToast = useCallback(
     (message: string, variant: ToastVariant = "info") => {
       const id = ++nextIdRef.current;
       setToasts((prev) => [...prev, { id, message, variant }]);
-      // Auto-expiration
       setTimeout(() => removeToast(id), TOAST_DURATION_MS);
     },
     [removeToast],
@@ -51,9 +45,6 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      {/* ZONE D'AFFICHAGE : fixe en haut au centre, superposée
-          (aucun décalage de mise en page), les toasts s'empilent.
-          aria-live -> annoncé par les lecteurs d'écran */}
       <div
         aria-live="polite"
         className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"
@@ -73,5 +64,5 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook d'accès (évite d'importer useContext + ToastContext partout)
+
 export const useToast = () => useContext(ToastContext);

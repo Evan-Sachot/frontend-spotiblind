@@ -169,7 +169,7 @@ export const useGameLogic = () => {
 
     socket.on("playerFoundSong", (data) => {
       setPlayersWhoFound((prev) => [...prev, data.userId]);
-      showToast(`${data.username} a trouvé ! 🎉`, "success");
+      showToast(`${data.username} a trouvé !`, "success");
     });
 
     socket.on("guessResult", (data) => {

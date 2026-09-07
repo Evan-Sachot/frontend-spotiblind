@@ -76,7 +76,7 @@ export const Game = () => {
 
                 {game.hasFoundSong ? (
                   <p className="text-2xl font-black text-green-400">
-                    Trouvé ! +10 points 🎉
+                    Trouvé ! +10 points 
                   </p>
                 ) : (
                   <GuessInput
@@ -160,7 +160,7 @@ export const Game = () => {
             {game.phase === "SCOREBOARD" && (
               <div className="text-center w-full max-w-md">
                 <h2 className="text-3xl font-black mb-6">
-                  🏆 Classement final
+                  Classement final
                 </h2>
                 <ol className="flex flex-col gap-2">
                   {sortedPlayers.map((player, index) => (
@@ -204,10 +204,9 @@ export const Game = () => {
                   key={player.id}
                   className="flex justify-between items-center bg-white/10 rounded-lg px-3 py-2"
                 >
-                  <span className="font-semibold truncate">
-                    {player.username}
-                    {game.playersWhoFound.includes(player.id) && " ✅"}
-                  </span>
+               <span className={`font-semibold truncate ${game.playersWhoFound.includes(player.id) ? "text-[#1DB954]" : ""}`}>
+               {player.username}
+                </span>
                   <span className="font-bold">{player.score}</span>
                 </li>
               ))}

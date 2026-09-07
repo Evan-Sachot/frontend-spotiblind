@@ -48,8 +48,6 @@ export const PlaylistSelector = ({
                     : "ring-1 ring-white/10 hover:ring-white/40"
                 }`}
               >
-                {/* Pochette : carré responsive (aspect-square suit la
-                    largeur de colonne), fallback dégradé si pas d'image */}
                 <div className="relative w-full aspect-square bg-gradient-to-br from-purple-700 to-purple-950">
                   {playlist.imageUrl && (
                     <img

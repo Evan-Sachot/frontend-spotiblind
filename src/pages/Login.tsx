@@ -1,4 +1,5 @@
 import {useAuthLogic} from "../hooks/useAuthLogic";
+import { Link } from "react-router-dom";
 import {Button} from "../components/ui/Button";
 
 export const Login =()=>{
@@ -40,6 +41,9 @@ export const Login =()=>{
                 </form>
             )}
             </div>
+            <Link to="/privacy" className="mt-6 text-xs text-purple-300 hover:text-white underline">
+            Confidentialité &amp; RGPD
+            </Link>
         </div>
     )
 }

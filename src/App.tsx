@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SocketProvider } from "./contexts/SocketContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { ProtectedRoute } from "./router/ProtectedRoute";
+import { Privacy } from "./pages/Privacy";
 import { Login } from "./pages/Login";
 import { Lobby } from "./pages/Lobby";
 import { Game } from "./pages/Game";
@@ -14,6 +15,7 @@ export const App = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/lobby" element={<Lobby />} />
               <Route path="/game" element={<Game />} />
