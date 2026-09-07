@@ -22,7 +22,7 @@ export const Game = () => {
           {game.currentUser?.username}
           </span>
           </div>
-          <span className="px-3 md:px-6py-2 border-l border-gray-300 font-bold">
+          <span className="px-3 md:px-6 py-2 border-l border-gray-300 font-bold">
             {game.roomCode}
           </span>
           <span className="px-3 md:px-6 py-2 border-l border-gray-300">
