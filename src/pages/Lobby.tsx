@@ -1,11 +1,3 @@
-// ============================================================
-// PAGE LOBBY — Accueil (Join/Create) puis salon d'attente.
-// Corrections :
-// - sidebarPlayers (SidebarPlayer[]) passé à PlayerSidebar au lieu
-//   des PublicPlayer bruts du serveur
-// - code de salon à 6 caractères (aligné back + maquette "8537C4")
-// - affichage des messages d'info du salon (arrivées/départs)
-// ============================================================
 import { useLobbyLogic } from "../hooks/useLobbyLogic";
 import { useSpotifyPlaylists } from "../hooks/useSpotifyPlaylists";
 import { PlayerSidebar } from "../components/lobby/PlayerSidebar";
@@ -18,8 +10,6 @@ export const Lobby = () => {
   const lobby = useLobbyLogic();
   const spotify = useSpotifyPlaylists();
 
-  // Adaptation des joueurs serveur (PublicPlayer) vers le format
-  // d'affichage de la sidebar (couronne + badge "prêt")
   const sidebarPlayers: SidebarPlayer[] = lobby.players.map((player) => ({
     ...player,
     isHost: player.username === lobby.hostUsername,
@@ -35,7 +25,6 @@ export const Lobby = () => {
     {lobby.currentUser?.username}
   </span>
 </div>
-        {/* Bouton de déconnexion (remplace l'avatar de la maquette) */}
         <LogoutButton />
       </header>
 
@@ -45,7 +34,6 @@ export const Lobby = () => {
             Spoti-Blind
           </h1>
 
-          {/* Erreur globale hors salon (salon introuvable, hôte parti...) */}
           {lobby.error && !lobby.showJoinInput && (
             <p className="text-red-400 font-bold mb-6">{lobby.error}</p>
           )}
@@ -67,7 +55,7 @@ export const Lobby = () => {
                     lobby.setRoomCodeInput(e.target.value.toUpperCase())
                   }
                   placeholder="CODE (8537C4)"
-                  maxLength={6} /* aligné sur le back : codes à 6 caractères */
+                  maxLength={6}
                   className="w-full bg-white/10 border-2 border-[#1DB954] text-white text-center text-2xl font-black tracking-[0.5em] py-4 rounded-lg focus:outline-none"
                   autoFocus
                 />
@@ -98,7 +86,7 @@ export const Lobby = () => {
             roomCode={lobby.activeRoom}
             players={
               sidebarPlayers
-            } /* le format adapté, plus les joueurs bruts */
+            } 
             onInvite={lobby.copyInviteCode}
           />
           <div className="flex-1 flex flex-col relative">
@@ -149,9 +137,6 @@ export const Lobby = () => {
               )}
             </div>
 
-            {/* QUITTER / JOUER : grille 2 colonnes égales -> les deux
-                boutons ont exactement la même taille et le même
-                alignement, quel que soit leur contenu */}
             <div className="grid grid-cols-2 gap-4 mt-6">
               <button
                 onClick={lobby.handleLeaveRoom}
@@ -168,8 +153,6 @@ export const Lobby = () => {
                   Jouer
                 </button>
               ) : (
-                /* Non-hôte : placeholder de MÊME hauteur que le bouton
-                   pour garder la grille symétrique */
                 <div className="py-4 flex items-center justify-center text-purple-300 font-bold text-lg animate-pulse">
                   En attente de l'hôte...
                 </div>
